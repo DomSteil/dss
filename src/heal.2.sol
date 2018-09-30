@@ -146,14 +146,6 @@ contract Vow {
         mstore(64, timestamp)
         return(64, 32)
       }
-      if eq(sig, 0x05db4538 /*   function Awe() external returns (uint256); */) {
-        mstore(64, Awe())
-        return(64, 32)
-      }
-      if eq(sig, 0x07a832b4 /*   function Joy() external returns (uint256); */) {
-        mstore(64, Joy())
-        return(64, 32)
-      }
       if eq(sig, 0x29ae8114 /*   function file(bytes32 what, uint256 data) external; */) {
 
         // iff auth
@@ -186,6 +178,50 @@ contract Vow {
 
         // if what == "vat" set vat = addr
         if eq(calldataload(4), "vat") { sstore(1, calldataload(36)) }
+
+        stop()
+      }
+      if eq(sig, 0x05db4538 /*   function Awe() external returns (uint256); */) {
+        mstore(64, Awe())
+        return(64, 32)
+      }
+      if eq(sig, 0x07a832b4 /*   function Joy() external returns (uint256); */) {
+        mstore(64, Joy())
+        return(64, 32)
+      }
+      if eq(sig, 0x697efb78 /*   function fess(uint256 tab) external; */) {
+
+        // iff auth
+        if pleb() { revert(0, 0) }
+
+        let hash_0 := hash2(4, era())
+
+        // set sin[era()] += tab
+        sstore(hash_0, uadd(sload(hash_0), calldataload(4)))
+
+        // set Sin += tab
+        sstore(5, uadd(sload(5), calldataload(4)))
+
+        stop()
+      }
+      if eq(sig, 0x35aee16f /*   function flog(uint48 era_) external; */) {
+
+        // iff era_ + wait <= era()
+        if gt(uadd(calldataload(4), sload(8)), era()) { revert(0, 0) }
+
+        let hash_0 := hash2(4, calldataload(4))
+
+        // sin_era_ := sin[era_]
+        let sin_era_ := sload(hash_0)
+
+        // set Sin -= sin_era_
+        sstore(5, usub(sload(5), sin_era_))
+
+        // set Woe += sin_era_
+        sstore(6, uadd(sload(6), sin_era_))
+
+        // set sin[era_] = 0
+        sstore(hash_0, 0)
 
         stop()
       }
@@ -223,7 +259,7 @@ contract Vow {
         // rad := wad * 10^27
         let rad := umul(calldataload(4), 1000000000000000000000000000)
 
-        // iff wad <= Ash_ && wad <= Joy() && int(wad) >= 0
+        // iff wad <= Ash_ && wad <= Joy() && int(rad) >= 0
         if or(or(gt(calldataload(4), Ash_), gt(calldataload(4), Joy())), slt(rad, 0)) { revert(0, 0) }
 
         // set Ash = Ash_ - wad
@@ -239,42 +275,6 @@ contract Vow {
         mstore(68, rad)
         // iff vat.call("heal(bytes32,bytes32,int256)", this, this, rad) != 0
         if iszero(call(gas, sload(1), 0, 0, 100, 0, 0)) { revert(0, 0) }
-
-        stop()
-      }
-      if eq(sig, 0x697efb78 /*   function fess(uint256 tab) external; */) {
-
-        // iff auth
-        if pleb() { revert(0, 0) }
-
-        let hash_0 := hash2(4, era())
-
-        // set sin[era()] += tab
-        sstore(hash_0, uadd(sload(hash_0), calldataload(4)))
-
-        // set Sin += tab
-        sstore(5, uadd(sload(5), calldataload(4)))
-
-        stop()
-      }
-      if eq(sig, 0x35aee16f /*   function flog(uint48 era_) external; */) {
-
-        // iff era_ + wait <= era()
-        if gt(uadd(calldataload(4), sload(8)), era()) { revert(0, 0) }
-
-        let hash_0 := hash2(4, calldataload(4))
-
-        // sin_era_ := sin[era_]
-        let sin_era_ := sload(hash_0)
-
-        // set Sin -= sin_era_
-        sstore(5, usub(sload(5), sin_era_))
-
-        // set Woe += sin_era_
-        sstore(6, uadd(sload(6), sin_era_))
-
-        // set sin[era_] = 0
-        sstore(hash_0, 0)
 
         stop()
       }
