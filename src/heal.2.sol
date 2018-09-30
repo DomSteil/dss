@@ -406,16 +406,16 @@ contract Vow {
       }
       function uadd(x, y) -> z {
         z := add(x, y)
-        if lt(z, x) { revert(0, 0) }
+        if gt(y, 0) { if iszero(gt(z, x)) { revert(0, 0) } }
       }
       function usub(x, y) -> z {
         z := sub(x, y)
-        if gt(z, x) { revert(0, 0) }
+        if gt(y, 0) { if iszero(lt(z, x)) { revert(0, 0) } }
       }
       function umul(x, y) -> z {
         z := mul(x, y)
         // iff y == 0 || z / y == x
-        if iszero(or(eq(y, 0), eq(div(z, y), x))) { revert(0, 0) }
+        if iszero(eq(y, 0)) { if iszero(eq(div(z, y), x)) { revert(0, 0) } }
       }
     }
   }
